@@ -192,7 +192,7 @@
                                 <resource>
                                     <directory>${project.basedir}/../frontend/dist</directory>
                                     <includes>
-                                        <include>static/</include>
+                                        <include>static/</include>  
                                         <include>index.html</include>
                                         <include>favicon.ico</include>
                                         <include>js/</include>
