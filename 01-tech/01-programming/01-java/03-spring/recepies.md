@@ -156,18 +156,26 @@
 
 Но т. к. фронтенд создает каждый раз новые файлы, необходимо очищать `resources\static` в бекенде
 
+Настройка плагина для очистки:
 
-Задачи:
+    <!--clear resources/static folder before before copy frontend files-->
+    <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-clean-plugin</artifactId>
+        <version>3.1.0</version>
+        <configuration>
+            <filesets>
+                <fileset>
+                    <directory>src/main/resources/static</directory>
+                </fileset>
+            </filesets>
+        </configuration>
+    </plugin>    
 
-* очищать папку
-* копировать ресурсы из фронтенда одной командой
+Настройка копирования
 
      <build>
         <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
                 <executions>
