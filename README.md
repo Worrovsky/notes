@@ -56,6 +56,8 @@
                 - [Pro Vue](/01-tech/01-programming/02-frontend/01-vue/pro-vue.md)
                 - [Vue how to](/01-tech/01-programming/02-frontend/01-vue/vue-how-to.md)
                 - [Vuetify how to](/01-tech/01-programming/02-frontend/01-vue/vuetify-how-to.md)
+            * [Инструменты](/01-tech/01-programming/02-frontend/03-tools)
+                - [webpack](/01-tech/01-programming/02-frontend/03-tools/webpack.md)
             * [Bootstrap](/01-tech/01-programming/02-frontend/bootstrap.md)
         + [БД](/01-tech/01-programming/04-db)
             * [postgres](/01-tech/01-programming/04-db/postgres.md)
