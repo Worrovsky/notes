@@ -73,6 +73,8 @@
                 - [maven заметки](/01-tech/01-programming/09-instruments/01-maven/maven-recepies.md)
             * [gradle](/01-tech/01-programming/09-instruments/02-gradle)
                 - [gradle how to](/01-tech/01-programming/09-instruments/02-gradle/gradle-how-to.md)
+            * [git](/01-tech/01-programming/09-instruments/03-git)
+                - [git how to](/01-tech/01-programming/09-instruments/03-git/git-how-to.md)
     - [linux](/01-tech/02-linux)
         + [LFCS](/01-tech/02-linux/LFCS)
         + [Руководство сисадмина(Немет)](/01-tech/02-linux/linux-nemet.md)
