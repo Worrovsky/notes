@@ -102,15 +102,7 @@ Webpack обрабатывает файлы с исходным кодом. На
 
 в проде лучше вообще не использовать или не давать доступ к map-файлам обычным пользователям
 
-[выбор](https://webpack.js.org/configuration/devtool/#development
-
-
-
-
-
-
-)
-
+[выбор](https://webpack.js.org/configuration/devtool/#development)
 
 
 ## Dev server
@@ -172,7 +164,7 @@ Webpack обрабатывает файлы с исходным кодом. На
 
 Настройки в `webpack.config.js`
 
-    const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+    const { CleanWebpackPlugin  = }require('clean-webpack-plugin')
     module.exports = {
         plugins: [
             new CleanWebpackPlugin(),
