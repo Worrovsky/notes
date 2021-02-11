@@ -164,7 +164,7 @@ Webpack обрабатывает файлы с исходным кодом. На
 
 Настройки в `webpack.config.js`
 
-    const { CleanWebpackPlugin  = }require('clean-webpack-plugin')
+    const { CleanWebpackPlugin } = require('clean-webpack-plugin')
     module.exports = {
         plugins: [
             new CleanWebpackPlugin(),
