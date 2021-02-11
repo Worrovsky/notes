@@ -25,7 +25,15 @@
 
 Отправка изменений в репозиторий
 
-    git push origin amin
+    git push origin main
+
+**Сравнение веток** (например локальной и на удаленном репозитории)
+
+смотрим ветки `git branch -a`
+получаем данные из репозитория `git fetch origin`
+смотрим различия `git diff main origin/main`
+или кратко `git diff main origin/main --stat`
+сливаем данные из репозитория `git pull` если надо
 
 
 ## Разное
