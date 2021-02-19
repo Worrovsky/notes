@@ -1,64 +1,188 @@
-## 1. Базовые
+## 1. Разметка
 
-### 1.1 Список
+## 1.1 Layout`ы (стандартные СSS)
 
-#### 1.1.1
+### 1.1.1 block vs inline
 
-    <v-list>
-        <v-list-group>...</v-list-group>
-        <v-list-item>...</v-list-item>
-    </v-list>    
+Все элементы - как прямоугольники (box)
+Два основных типа:
 
-Атрибуты:
+* **block**
+    - начинается с новой строки
+    - занимает всю доступную ширину в контейнере
+    - реагирует на свойства `height` и `width`
+    - padding, границы, margin отталкивает другие элементы
+    - пример: `div`, `p`
+* **inline**
+    - не выходит на новую строку
+    - не реагирует на свойства `height` и `width`, под содержимое расширяется только
+    - вертикальные padding, границы, margin применяются, но не отталкивают соседние элементы
+    - горизонтальные - применяются и отталкивают соседние inline-элементы
+    - пример: `a`, `span`
 
-* **nav** - уменьшает ширину, закругляет края (обычно с v-navigation-drawer)
-* **dense** - 
+### 1.1.2 Свойство display
+
+**display** - CSS свойство. Определяет поведение элемента во внешнем окружении (outer type) и поведение дочерних элементов (inner type)
+
+Значения:
+
+* `none` - не отображается элемент
+* внешние (не влияют на дочерние элементы)
+    - `block`
+    - `inline` 
+* внутренние
+    - `flex` - сам элемент как box, дочерние - по модели flexbox
+    - `table` - как `<table>`
+    - `grid` - сам элемент как box, дочерние - по модели grid
+* комбинации внешнего и внутреннего (в два слова - более новые стандарты)
+    - `inline flex` (`inline-flex`): сам элемент как `inline`, дочерние - по модели `flex`
+    - `inline-block`: смесь `inline` и `block`: нет переноса на новую строку, не растягивается, но можно задать размеры, отсупы.
+
+### 1.1.3 Модель flexbox
+
+#### 1.1.3.1 Основы flexbox
+
+Это однонаправленная модель (в отличие от grid, где управляется положением элемента по двум осям).
+Есть одна основная ось и есть дополнительная, перпендикулярная главной.
+
+Основная ось задается свойством `flex-direction`:
+
+* `row`
+* `row-reverse`
+* `column`
+* `column-reverse`
+
+Когда устанавливаем свойство `display: flex`:
+
+* дочерние элементы отображаются в строку (`flex-direction = row`)
+* элементы начинаются от начала главной оси (слева обычно)
+* элементы не растягиваются по главной оси, но могут сжиматься
+* по дополнительной оси растягиваются для заполнения пространства
+* если элементы не помещаются, переноса не будет (см. свойство `wrap`)
+
+#### 1.1.3.2 Свойство flex-wrap
+
+По умолчанию - `nowrap`: элементы не переносятся на новые строки, если не помещаются
+`wrap` - переносятся
+
+#### 1.1.3.3 Свойства flex-basic, -grow, -shrink
+
+Определяют размеры элемента в условиях наличия свободного пространства (в т. ч. отрицательного)
+
+`flex-basic: auto` - размер элемента определяется значением `width`, если есть. А если нет - ???. В `flex-basic` может быть указана явная величина. В общем определили базовый размер элемента.
+
+Затем вычисляется свободное пространство в контейнере. Если оно положительное делится между элементами пропорционально значению свойства **flex-grow**. Если оно 0 - не растет
+
+Если отрицательное - элементы сжимаются аналогично по свойству **flex-shrink**
+
+Есть короткая запись `flex: <grow> <shrink> <basic>`, например `flex: 0 1 auto`
+
+#### 1.1.3.4 Свойство align-items
+
+Выравнивает элементы по дополнительной оси:
+
+* `stretch` - растягивает. Значение по умолчанию
+* `flex-start` 
+* `flex-end`
+* `center`
+
+#### 1.1.3.5 Свойство justify-content
+
+Выравнивает элементы по основной оси:
+
+* `flex-start`
+* `flex-end`
+* `center`
+* `space-around` - 1/2 у краев контейнера, 1 часть между
+* `space-between` - 0 у краев
+* `space-evenly` - одинаковые у краев и между
 
 
-#### 1.1.2
-
-    <v-list-item>
-        <v-list-item-icon>...</v-list-item-icon>
-        <v-list-item-content>...</v-list-item-content>
-        <v-list-item-avatar>...</v-list-item-avatar>
-        <v-list-item-action>...</v-list-item-action>
-    </v-list-item>
-
-#### 1.1.3 v-list-group
-
-#### 1.1.4 v-list-item-icon
-
-    <v-list-item-icon> 
-        <v-icon>mdi-home</v-icon>
-    </v-list-item-icon>
-
-#### 1.1.5 v-list-item-content
-
-    <v-list-item-content>
-        <v-list-item-title>Заголовок</v-list-item-title>
-        <v-list-item-subtitle>Подзаголовок</v-list-item-subtitle>
-    </v-list-item-content>
-
-#### 1.1.6 v-list-item-action
-
-    <v-list-item-action>
-        <v-list-item-action-text>...</v-list-item-action-text>
-        <v-icon>...</v-icon>
-    
-        // или
-        <v-btn icon>
-            <v-icon>..</v-icon>
-        </v-btn>
-    
-    </v-list-item-action>
 
 
 
+## 1.2 Display и flexbox в Vuetify
+
+### 1.2.1 Свойство display
+
+[docs (styles/display)](https://vuetifyjs.com/en/styles/display/#visibility)
+
+Задается через класс по шаблону `d-{breakpoint}-{value}`
+
+`breakpoint`: xs, sm, md, lg, xl. (можно не указывать)
+Применяются от указанного и выше, например:
+
+    d-sm-none // не виден для любого размера
+    d-sm-none d-md-flex // не виден только для малых, остальное - flex
+
+`value`: none, inline, inline-block, block, table и дочерние, flex, inline-flex
 
 
-### 1.2 Сетка (grid)
+Скрытие с особыми условиями: `hidden-{breakpoint}-condirion`, где условие `only`, `and-down` или `and-up`
 
-#### 1.2.1 Основы
+### 1.2.2 flexbox
+
+Варианты классов:
+
+* `d-flex` 
+* `d-inline-flex`
+* `d-{breakpoint}-flex`
+* `d-{breakpoint}-inline-flex`
+
+Направление главной оси:
+
+* `flex-row`
+* `flex-column` 
+* + `-reverse`
+* + брейкпоинты
+
+Выравнивание по основной оси:
+
+* `justify-start`
+* `justify-end`
+* `justify-center`
+* `justify-space-between`
+* `justify-space-around`
+*  + брейкпоинты
+
+Выравнивание по дополнительной оси: 
+
+* `align-start`
+* `align-end`
+* `align-center`
+* `align-baseline`
+* `align-stretch`
+* + брейкпоинты
+
+Выравнивание отдельного элемента вдоль главной оси (новое по сравнению с моделью CSS): 
+
+* `align-self-start`
+* `align-self-end`
+* `align-self-center`
+* `align-self-stretch`
+* `align-self-auto`
+* + брейкпоинты
+
+Поведение при проверке уменьшаются элементы или нет:
+
+* `flex-wrap`
+* `flex-nowrap`
+* `flex-wrap-reverse`
+* + брейкпоинты
+
+Сжатие/расширение (только 0 или 1)
+
+* `flex-grow-0` / `flex-grow-1`
+* `flex-shrink-0` / `flex-shrink-1`
+
+
+
+
+
+
+## 1.3 Сетка (grid)
+
+### 1.3.1 Основы
 
 Основана на *flex-box*. Аналог bootsprap: 12 колонок, брейкпоинты
 
@@ -70,13 +194,13 @@
         </v-row>
     <v-container>
 
-#### 1.2.2 Container
+#### 1.3.2 Container
 
 Может иметь доп. атрибуты (`ma-*, pa-*`), распространяющиеся на дочерние элементы
 
 **fluid** - по умолчанию на каждый брейкпоинт установлена максимальная ширина (отступы по бокам видны). *fluid* убирает ограничение (отступов не будет)
 
-#### 1.2.3 Row
+#### 1.3.3 Row
 
 *gutter* (отступ) по умолчанию 24px между колонками
 
@@ -90,19 +214,19 @@
 **justify-md** и т. п.
 
 
-#### 1.2.4 Col
+#### 1.3.4 Col
 
 **cols** - определяет кол-во колонок (1-12, auto)
 **sm**, **md**, **lg**, **xl** - *cols* для брейкпоинтов (*xs* - нет)
 **offset** - смещение 
 **offset-sm** и т. п.
 
-#### 1.2.5 Spacer
+#### 1.3.5 Spacer
 
 Пространство между колонками
 
 
-### 1.3 Spacing
+### 1.4 Spacing
 
 применяются через  `class`: напр. `class="ma-5"`
 
@@ -133,7 +257,7 @@ Breakpoint:
 `ma-auto, mx-auto, my-auto` - это обычно выравнивание по центру
 
 
-### 1.4 Elevation
+### 1.5 Elevation
 
 Изменение по z-оси
 
@@ -142,11 +266,73 @@ Breakpoint:
 
 Значения от 0 до 24
 
-## 2. Компоненты
 
-### 2.1 Navigation-drawer
 
-#### 2.1.1 Атрибуты
+
+
+
+## 3. Разные компоненты
+
+### 3.1 Список
+
+#### 3.1.1 Основы
+
+    <v-list>
+        <v-list-group>...</v-list-group>
+        <v-list-item>...</v-list-item>
+    </v-list>    
+
+Атрибуты:
+
+* **nav** - уменьшает ширину, закругляет края (обычно с v-navigation-drawer)
+* **dense** - 
+
+
+#### 3.1.2 Элементы
+
+    <v-list-item>
+        <v-list-item-icon>...</v-list-item-icon>
+        <v-list-item-content>...</v-list-item-content>
+        <v-list-item-avatar>...</v-list-item-avatar>
+        <v-list-item-action>...</v-list-item-action>
+    </v-list-item>
+
+#### 3.1.3 v-list-group
+
+#### 3.1.4 v-list-item-icon
+
+    <v-list-item-icon> 
+        <v-icon>mdi-home</v-icon>
+    </v-list-item-icon>
+
+#### 3.1.5 v-list-item-content
+
+    <v-list-item-content>
+        <v-list-item-title>Заголовок</v-list-item-title>
+        <v-list-item-subtitle>Подзаголовок</v-list-item-subtitle>
+    </v-list-item-content>
+
+#### 3.1.6 v-list-item-action
+
+    <v-list-item-action>
+        <v-list-item-action-text>...</v-list-item-action-text>
+        <v-icon>...</v-icon>
+    
+        // или
+        <v-btn icon>
+            <v-icon>..</v-icon>
+        </v-btn>
+    
+    </v-list-item-action>
+
+
+
+
+
+
+### 3.2 Navigation-drawer
+
+#### 3.2.1 Атрибуты
 
 Варианты видимости:
 * **permanent** - виден всегда, независимо от размера экрана
@@ -160,7 +346,7 @@ Breakpoint:
 **expand-on-hover** - переводит в мини-вариант, при наведении - раскрывает
 
 
-##### 2.1.1.2 Mini
+##### 3.2.1.2 Mini
 
 **mini-variant** - сжимает панель (до 56px по умолчанию), в элементах списков виден только первый элемент. Булево значение, можно завязывать на кнопку напр.
 
@@ -189,7 +375,7 @@ Breakpoint:
 
 **mini-variant-width** - ширина в сжатом состоянии
 
-#### 2.1.2 Слоты
+#### 3.2.2 Слоты
 
 **append** - низ панели
 
@@ -201,12 +387,12 @@ Breakpoint:
 
 **prepend** - верх
 
-### 2.2 App bar
+### 3.3 App bar
 
 **v-app-bar**
 Панель с действиями (обычно верхняя). Обычно располагается внутри **v-app**
 
-#### 2.2.1 Дочерние элементы
+#### 3.3.1 Дочерние элементы
 
 **v-app-bar-nav-icon** - гамбургер-кнопка
 обычно для открытия панелей `navigation drawler`
@@ -217,7 +403,7 @@ Breakpoint:
 **v-toolbar-title** - заголовок
 
 
-#### 2.2.2 Свойства
+#### 3.3.2 Свойства
 
 **app** - обозначает бар как часть макета приложения. (располагается по умолчанию вверху, фиксированая высота)
 
