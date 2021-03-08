@@ -6,6 +6,7 @@
             * [core](/01-tech/01-programming/01-java/01-core)
                 - [streams](/01-tech/01-programming/01-java/01-core/streams.md)
                 - [threads](/01-tech/01-programming/01-java/01-core/threads.md)
+                - [file I/O (NIO.2)](/01-tech/01-programming/01-java/01-core/file-system.md)
                 - [интерфейсы, внутренние классы](/01-tech/01-programming/01-java/01-core/interface-inner-classes.md)
                 - [исключения](/01-tech/01-programming/01-java/01-core/exceptions.md)
                 - [компиляция через javac](/01-tech/01-programming/01-java/01-core/compile-with-javac.md)
