@@ -349,47 +349,49 @@ Enum можно использовать в switch
 
 ### 2.2 Введение в функциональное программирование
 
-        Функциональные интерфейсы
-            интерфейс с единственным абстрактным методом
-            наличие методов по умолчанию, статических методов не снимает признак функциональности
+#### 2.2.1 Функциональные интерфейсы
 
-            можно использовать аннотацию @FunctionalInterface как гарантию,
-                что не будет изменен статус интерфейса
+Интерфейс с единственным абстрактным методом.
 
-        Реализация функционального интерфейса через лямбда-выражения
+Наличие методов по умолчанию, статических методов не снимает признак функциональности
 
-            class Animal {
-                public boolean canSwim() {return false}
-            }
-            public interface CheckTrait {
-                public boolean test(Animal a);
-            }
-            class App {
-                public static void check(Animal a, CheckTrait trait) {
-                    System.out.println(trait.test(a));
-                }
-                public static void main(String[] args) {
-                    Animal animal = new Animal();
-                    check(animal, a -> false);
-                    check(animal, a -> a.canSwim());
-                }
-            }
+Можно использовать аннотацию **@FunctionalInterface** как гарантию,что не будет изменен статус интерфейса
 
-            когда передается параметром или присваивается переменной, проверяется
-                соответствие типу переменной (методу функционального интерфейса):
-                параметры метода должны соответствовать параметрал лямбды
-                возвращаемое значение - результату тела лямбда-выражения
+#### 2.2.2 Реализация функционального интерфейса через лямбда-выражения
 
-        Синтаксис лямбда-выражений
-            параметры -> тело
-            параметры НЕ заключаются в "()", только если он один и без указания типа
-            тело если состоит из более одного выражения должны быть в "{}"
-            если есть {}:
-                - все выражения должны завершаться ";"
-                - если возвращаемый тип не void должен явно быть return
-            если есть return, обязательны {}
-            типы параметров опциональны, но или у всех, или ни у одного
-            присваивать новые значения параметрам нельзя
+    class Animal {
+        public boolean canSwim() {return false}
+    }
+    public interface CheckTrait {
+        public boolean test(Animal a);
+    }
+    class App {
+        public static void check(Animal a, CheckTrait trait) {
+            System.out.println(trait.test(a));
+        }
+        public static void main(String[] args) {
+            Animal animal = new Animal();
+            check(animal, a -> false);
+            check(animal, a -> a.canSwim());
+        }
+    }
+
+Когда передается параметром или присваивается переменной, проверяется соответствие типу переменной (методу функционального интерфейса):
+
+* параметры метода должны соответствовать параметру лямбды
+* возвращаемое значение - результату тела лямбда-выражения
+
+Синтаксис лямбда-выражений:
+
+* `параметры -> тело`
+* параметры НЕ заключаются в `()`, только если он один и без указания типа
+* тело если состоит из более одного выражения, должно быть в `{}`
+* если есть `{}`:
+    - все выражения должны завершаться ";"
+    - если возвращаемый тип не `void` должен явно быть `return`
+* если есть `return`, обязательны {}
+* типы параметров опциональны, но или у всех, или ни у одного
+* присваивать новые значения параметрам нельзя
 
         интерфейс Predicate
 
@@ -1465,7 +1467,7 @@ ch. 5 Dates, String, Localization
                 можно собственный:
                     DateTimeFormatter.ofPattern("MM yyyy");
 
-ch. 7 Concurrency
+## 7. Concurrency
 
     Основы потоков
 
@@ -1871,165 +1873,167 @@ java.io.File
 
 #### 8.3.1 FileInputStream, FileOutputStream
 
-            потоки для работы с файлами
-            конструкторы принимают файл или строку
+Потоки для работы с файлами.
+Конструкторы принимают файл или строку.
 
-            основные методы int read(), write(int)
+Основные методы `int read()`, `write(int)`
 
-            чтение файла обычно или пока будет возвращено -1 (EOF) или просто прервав цикл
+Чтение файла обычно или пока будет возвращено -1(EOF), или просто прервав цикл.
 
-            Из-за необходимости возврата -1, метод read() возвращает int, а не byte
-                Для совместимости write() также работает с int
+Из-за необходимости возврата -1, метод `read()` возвращает `int`, а не `byte`.
+Для совместимости `write()` также работает с `int`.
 
+Читать можно в массив `int read(byte[])`. Возвращает количество реально прочитанных байт. Запись также есть из массива. 
 
-            читать можно в массив int read(byte[]). Возвращает количество реально прочитанных байт
-            запись также есть из массива 
+Пример использования (копирование файлов, не оптимально):
 
-
-            Пример использования (копирование файлов, не оптимально)
-
-                public void copy(File source, File dest) {
-                    try (InputStream in = new FileInputStream(source);
-                         OutputStream out = new FileOutputStream(dest)) {
-
-                        int b;
-                        while ((b = in.read()) != -1) {
-                            out.write(b);
-                        }
-                    }
-                    // try-with-resource (close() не нужен)
-                }
+    public void copy(File source, File dest) {
+        try (InputStream in = new FileInputStream(source);
+                      OutputStream out = new FileOutputStream(dest)) {
+            int b;
+            while ((b = in.read()) != -1) {
+                out.write(b);
+            }
+        }  // try-with-resource (close() не нужен)
+    }
 
 #### 8.3.2 BufferedInputStream, BufferedOutputStream
 
-            обертки для низкоуровневых потоков
-            чтение/запись через массивы байтов
+Обертки для низкоуровневых потоков.
 
-            long read(byte[]) читает данные из потока в массив. Возвращает количество прочитанных.
-                0 - если конец потока
-            write(byte[], int offset, int length) - записывает из массива
+Чтение/запись через массивы байтов:
 
-            Размер буфера обычно степень 2 (ОС также работают по степеням). 1024 обычный размер.
-                Увеличение / уменьшение размера буфера может влиять на производительность,
-                но менее значительно чем переход к буферизированным потокам от обычных.
+* **long read(byte[])** - читает данные из потока в массив. Возвращает количество прочитанных. `0` - если конец потока.
+* **write(byte[], int offset, int length)** - записывает из массива
 
-            Пример использования 
-                public void copy(File source, File dest) {
-                    try (
-                        InputStream in = new BufferedInputStream(new FileInputStream(source));
-                        OutputStream out = new BufferedOutputStream(new FileOutputStream(dest))) {
+Размер буфера обычно степень 2 (ОС также работают по степеням). 1024 обычный размер. Увеличение / уменьшение размера буфера может влиять на производительность, но менее значительно чем переход к буферизированным потокам от обычных.
 
-                        byte[] buffer = new byte[1024];
-                        int lengthRead;
-                        while ((lengthRead = in.read(buffer)) > 0) {
-                            out.write(buffer, 0, lengthRead);
-                            out.flush();
-                        }
-                    }
-                }
+    public void copy(File source, File dest) {
+        try ( InputStream in 
+                = new BufferedInputStream(new FileInputStream(source));
+            OutputStream out 
+                = new BufferedOutputStream(new FileOutputStream(dest))) {
+            byte[] buffer = new byte[1024];
+            int lengthRead;
+            while ((lengthRead = in.read(buffer)) > 0) {
+                out.write(buffer, 0, lengthRead);
+                out.flush();
+            }
+        }
+    }
 
 #### 8.3.3 FileReader, FileWriter
 
-            для работы с текстовыми файлами
-            методы
-                int read()
-                int read(char[])
-                write(int)
-                write(char[], off, len)
-                write(String, off, len)
+Для работы с текстовыми файлами
+
+Методы:
+
+* **int read()**
+* **int read(char[])**
+* **write(int)**
+* **write(char[], off, len)**
+* **write(String, off, len)**
 
 #### 8.3.4 BufferedReader, BufferedWriter
 
-            дополнительно имеет метод String readLine() (возвращает null в конце файла)
+Дополнительно имеет метод String readLine() (возвращает null в конце файла)
 
-            запись:
-                write(String)
-                newLine()
+Запись:
+
+* **write(String)**
+* **newLine()**
 
 #### 8.3.5 ObjectInputStream, ObjectOutputStream
 
-            для сохранения / восстановления объектов классов через сериализацию
+Для сохранения / восстановления объектов классов через сериализацию.
 
-            интерфейс Serializable
+Интерфейс Serializable:
 
-                маркерный интерфейс без методов
-                можно отмечать класс, при этом его свойства также должны быть сериализуемы
+* маркерный интерфейс без методов
+* можно отмечать класс, при этом его свойства также должны быть сериализуемы
 
-                в процессе сериализации может возникать исключение 
+В процессе сериализации может возникать исключение.
 
 #### 8.3.6 PrintStream, PrintWriter
 
-            классы для записи java-объектов в текстовые потоки
-            напр. System.out и System.err это PrintStream
+Классы для записи java-объектов в текстовые потоки. Например `System.out` и `System.err` это `PrintStream`
 
-            наследуют методы OutputStream и Writer, плюс свои методы
-                print(), println(), format(), printf()
-            Эти методы не генерируют исключений
-            вместо этого метод checkError()
+Наследуют методы **OutputStream** и **Writer**, плюс свои методы `print()`, `println()`, `format()`, `printf()`
+        
+Эти методы не генерируют исключений, вместо этого метод **checkError()**
 
-            print()
-                переопределен для объектов через String.valueOf() или toString()
-            println()
-                аналог print(), но добавляет перенос строки
-            format() и printf()
-                аналоги String.format()
-                printf() - из С
+**print()** - переопределен для объектов через `String.valueOf()` или `toString()`
+**println()** - аналог **print()**, но добавляет перенос строки
+**format()** и **printf()** - аналоги `String.format()`
+**printf()** - из С
 
 #### 8.3.7 Иерархия потоков
 
-        Writer 
-            абстрактный
-            запись символьных потоков
+**Writer** 
 
-        OutputStreamWriter --> Writer
-            конструкторы: OutputStream, кодировка
-            связывает байтовые потоки с символьными (внутри байтовый, внешне символьный)
-            символы, переданные в этот поток преобразуются в байты в соответствии с кодировкой
-            методы: write(char[])
+* абстрактный
+* запись символьных потоков
 
-        FileWriter --> OutputStreamWriter
-            конструкторы: File, строка-имя, флаг append
-            для записи символьных потоков в файл
-            методы: write(char[])
+**OutputStreamWriter** --> Writer
+            
+* конструкторы: OutputStream, кодировка
+* связывает байтовые потоки с символьными (внутри байтовый, внешне символьный)
+* символы, переданные в этот поток преобразуются в байты в соответствии с кодировкой
+* методы: `write(char[])`
 
-        BufferedWriter --> Writer
-            конструкторы: Writer, размер буфера
-            методы: newLine()
+**FileWriter** --> OutputStreamWriter
+
+* конструкторы: File, строка-имя, флаг append
+* для записи символьных потоков в файл
+* методы: `write(char[])`
+
+**BufferedWriter** --> Writer
+
+* конструкторы: `Writer`, размер буфера
+* методы: `newLine()`
 
 
-        PrintWriter --> Writer
-            конструкторы: File, строка-имя файла, Writer, OutputStream
-            методы: print(), println(), format()
-            нет исключений, checkError(), autoFlush
+**PrintWriter** --> Writer
 
-       
-        OutputStream
-            абстрактный
-        
-        FileOutputStream --> OutputStream
-            конструкторы: File, строка-имя, пересоздавать файл или нет
+* конструкторы: File, строка-имя файла, Writer, OutputStream
+* методы: print(), println(), format()
+* нет исключений, checkError(), autoFlush
 
-        ObjectOutputStream --> OutputStream
-            конструкторы: OutputStream
-            сериализация объектов
-            методы writeInt() и т.п., writeObject()
 
-        FilterOutputStream --> OutputStream
-            реализация абстрактного
-            конструкторы: OutputStream
+**OutputStream**
+    
+* абстрактный
 
-        BufferedOutputStream --> FilterOutputStream
-            конструкторы: OutputStream, размер буфера
+**FileOutputStream** --> OutputStream
+    
+* конструкторы: File, строка-имя, пересоздавать файл или нет
 
-        DataOutputStream --> FilterOutputStream
-            конструкторы: OutputStream
-            для записи примитивных типов: writeByte(), writeInt() и т.п.
+**ObjectOutputStream** --> OutputStream
+    
+* конструкторы: `OutputStream`
+* сериализация объектов
+* методы `writeInt()` и т.п., `writeObject()`
 
-        PrintStream --> FilterOutputStream
-            конструкторы: File, строка-имя, OutputStream, флаг autoFlush
-            не вбрасывает IOException, вместо - внутренний флаг и checkError()
-            можно настроить flush автоматически
-            методы print (переопределенные), println
+**FilterOutputStream** --> OutputStream
+   
+* реализация абстрактного
+* конструкторы: `OutputStream`
+
+**BufferedOutputStream** --> FilterOutputStream
+   
+* конструкторы: `OutputStream`, размер буфера
+
+**DataOutputStream** --> FilterOutputStream
+  
+* конструкторы: `OutputStream`
+* для записи примитивных типов: `writeByte()`, `writeInt()` и т.п.
+
+**PrintStream** --> FilterOutputStream
+
+* конструкторы: File, строка-имя, OutputStream, флаг autoFlush
+* не вбрасывает `IOException`, вместо - внутренний флаг и `checkError()`
+* можно настроить flush автоматически
+* методы `print()` (переопределенные), `println()`
 
 
 
