@@ -1,6 +1,129 @@
 
 # Разное
 
+## Реализация equals() и hashCode() при взаимодействии с Hibernate
+
+[blog](https://thorben-janssen.com/ultimate-guide-to-implementing-equals-and-hashcode-with-hibernate/)
+
+### Когда нужна собственная реализация 
+
+Реализация методов в **Object** основана на проверке равенства по ссылке (идентичности объектов).
+
+Поскольку Hibernate гарантировано возвращает один и тот же объект в рамках одной сессии, в этом случае можно не переопределять методы
+
+Если объекты получаются из разных сессий или применяется detach/merge сущностей, тогда экземпляры сущности не будут идентичны и методы по умолчанию не подойдут, надо переопределять.
+
+### Требования к методам
+
+**equals()** обязан давать одинаковый результат при нескольких вызовах. Дополнительно интерфейс **Set** накладывает ограничение: не гарантирует корректность, если состояние объекта изменилось, так что повлияло на равенство.
+
+Это проблема, если используется автогенерация ключей. Тогда состояние меняется в процессе жизненного цикла объекта (вопрос когда будет проинициализирован этот ключ).
+
+**hash()** в контексте Hibernate особых требований не предъявляет, просто должен быть согласован с **equals()**
+
+### Как реализовывать
+
+#### Требования к реализации 
+
+Реализация должна удовлетворять следующим тестам:
+
+    // 2 transient entities need to be NOT equal
+    MyEntity e1 = new MyEntity("1");
+    MyEntity e2 = new MyEntity("2");
+    Assert.assertFalse(e1.equals(e2));
+
+    // 2 managed entities that represent different records need to be NOT equal
+    e1 = em.find(MyEntity.class, id1);
+    e2 = em.find(MyEntity.class, id2);
+    Assert.assertFalse(e1.equals(e2));
+
+    // a detached and a managed entity object that represent the same record need to be equal
+    em.detach(e1);
+    e2 = em.find(MyEntity.class, id1);
+    Assert.assertTrue(e1.equals(e2));
+
+    // a re-attached and a managed entity object that represent the same record need to be equal
+    e1 = em.merge(e1);
+    Assert.assertTrue(e1.equals(e2));
+
+#### Использование бизнес-ключей
+
+    @Entity
+    public class MyEntity {
+        @Id @GeneratedValue(strategy = GenerationType.AUTO)
+        private Long id;
+        @NaturalId
+        private String businessKey;
+    
+        public MyEntity(String businessKey) {
+            this.businessKey = businessKey;
+        }
+     
+        private MyEntity() {}
+         
+        @Override
+        public int hashCode() {
+            return Objects.hashCode(businessKey);
+        }
+    }
+
+Если есть бизнес-ключ или натуральный ключ и он устанавливается сразу при создании объекта, достаточно только его включить в реализацию **equals()** и **hashCode()**.
+
+Для Hibernate допустимо не создавать пустой конструктор, но JPA требует пустой конструктор. В этом случае возможно изменение хеш-кода после создания. Выход - или сделать реализацию **hash()** возвращающей константу, или устанавливать ключ до помещения в Set.
+
+Если бизнес-ключ уникален в пределах какого-то родителя, необходимо включать и родителя в методы.
+
+#### Использование программно устанавливаемых ключей
+
+    @Entity
+    public class MyEntity {
+        @Id
+        private Long id;
+        
+        public MyEntity(Long id) {
+            this.id = id;
+        }
+     
+        private MyEntity() {}
+         
+        @Override
+        public int hashCode() {
+            return Objects.hashCode(id);
+        }
+    }
+
+Все тоже самое как и для бизнес ключа, устанавливать его стараться в конструкторе или сразу после создания объекта.
+
+#### Использование автогенерируемых ключей
+
+Такой ключ будет установлен только при фактическом сохранении сущности. Поэтому объект может существовать с пустым и с заполненным ключом.
+
+Из-за ограничения интерфейса Set вынуждены в хеш возвращать константу. Это скажется на производительности коллекций большого объема, но ...
+
+    @Entity
+    public class MyEntity {
+        @Id  @GeneratedValue(strategy = GenerationType.AUTO)
+        private Long id;
+    
+        @Override
+        public int hashCode() {
+            return 13;
+        }
+         
+        @Override
+        public boolean equals(Object obj) {
+            ...
+            return id != null && id.equals(other.getId());
+        } 
+
+### Итого
+
+Переопределять надо, только если работаем с несколькими сессиями или detached entities.
+
+Собственные реализации должны удовлетворять стандартным контрактам методов и основываться на:
+
+* бизнес-ключе или программном первичном ключе (включаем их в оба метода)
+* автогенерируемом ключе (включаем его в equals(), hash() возвращает константу)
 ## Вопросы при разработке
 
 Каким способом получить SessionFactory
@@ -51,6 +174,7 @@ id авто генерация - сквозная на все таблицы. К
     session.close();
 
 Здесь `User` - POJO с аннотацией `@Entity`
+
 
 # Documentation 5.4.7
 
