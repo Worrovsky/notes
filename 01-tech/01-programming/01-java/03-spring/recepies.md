@@ -1,3 +1,17 @@
+<!-- MarkdownTOC autolink="true" levels="2" uri_encoding="false" -->
+
+- [1. Spring MVC xml config](#1-spring-mvc-xml-config)
+- [2. Spring MVC java config](#2-spring-mvc-java-config)
+- [3. Логирование](#3-Логирование)
+- [4. Spring + Vue](#4-spring--vue)
+- [6. \(Idea\) Расцветка консоли Spring Boot](#6-idea-Расцветка-консоли-spring-boot)
+- [7. Vue + Axios](#7-vue--axios)
+- [8. Spring Security](#8-spring-security)
+- [9. Общая организация взаимодействия Spring Security и фронтенда](#9-Общая-организация-взаимодействия-spring-security-и-фронтенда)
+
+<!-- /MarkdownTOC -->
+
+
 ## 1. Spring MVC xml config
 
 Структура проекта
@@ -242,9 +256,6 @@ http://jasonkarns.com/blog/ansi-color-in-windows-shells/
     Cygwin Terminal
     Cmder
 
-
-
-
 ## 7. Vue + Axios
 
 ### 7.1 Глобальный объект Axios для запросов
@@ -270,14 +281,9 @@ http://jasonkarns.com/blog/ansi-color-in-windows-shells/
 
 подробнее про добавление свойств объекта `Vue` [vue cookbook](https://vuejs.org/v2/cookbook/adding-instance-properties.html)
 
-
-
 ## 8. Spring Security
 
-
 посмотреть https://github.com/spring-projects/spring-security/tree/master/samples/javaconfig
-
-
 
 ### 8.1 Конфигурация
 
@@ -330,8 +336,6 @@ http://jasonkarns.com/blog/ansi-color-in-windows-shells/
 
 (?) Кука `JSESSIONID` все равно есть
 
-
-
 #### 8.1.4 Указания логина / пароля
 
 ##### 8.1.4.1 В файле свойств (properties)
@@ -355,8 +359,6 @@ http://jasonkarns.com/blog/ansi-color-in-windows-shells/
     }
 
     
-
-
 #### 8.1.5 Настройка UserDetailsService
 
 https://www.javainterviewpoint.com/spring-security-inmemoryuserdetailsmanager/
@@ -519,8 +521,6 @@ https://www.javainterviewpoint.com/spring-security-inmemoryuserdetailsmanager/
 Почему именно бин с названием `corsConfigurationSource`, см. `http.cors()` и в нем `CorsConfigurer`
 
 
-
-
 ### 8.5 Basic Authentication
 
 Конфигурация
@@ -577,6 +577,3 @@ https://www.javainterviewpoint.com/spring-security-inmemoryuserdetailsmanager/
                 password: password
             }}); 
 
-
-
-TODO: rest-контроллер возвращает что-то, вывести в компоненте
