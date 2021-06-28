@@ -15,6 +15,12 @@
     git remote -v
     git remote show origin
 
+**Привязка к удаленному репозиторию**
+    
+    git remote add <Имя> <Адрес>
+
+    git remote add origin https://github.com/someuser/test.git
+ 
 **Получение данных из репозитория** (без изменения локальных данных, нужен merge)
 
     git fetch origin
@@ -39,7 +45,6 @@
 
 сливаем данные из репозитория `git pull` если надо
 
-
 ## Работа через ssh
 
 [docs](https://docs.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh)
@@ -57,6 +62,12 @@
 
 ## Разное
 
-Путь, где установлен git
+**Путь, где установлен git**
 
     git --exec-path
+
+**Переключение вывода не латинских символов в путях**
+
+    git config --global core.quotepath false
+
+Тогда вместо например `new file: "src/Ext/\237\321\321\200\320\270\..` будет кириллица.
