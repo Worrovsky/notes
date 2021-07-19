@@ -4,6 +4,7 @@
 - [2. Работа с репозиториями](#2-Работа-с-репозиториями)
 - [3. Работа через ssh](#3-Работа-через-ssh)
 - [4. Соглашения тексту коммитов](#4-Соглашения-тексту-коммитов)
+- [5. Настройка аутентификации через ssh в Win \(через Cmder\)](#5-Настройка-аутентификации-через-ssh-в-win-через-cmder)
 - [99. Разное](#99-Разное)
 
 <!-- /MarkdownTOC -->
@@ -99,6 +100,18 @@
 
 Есть разные инструменты для генерации / проверки текста коммитов. Кроме унификации позволяют автоматически генерировать change log. 
 
+## 5. Настройка аутентификации через ssh в Win (через Cmder)
+
+* сгенерировать ключ (любой способ: Putty, ssh-keygen через Cmder)
+* добавить ключ на GitHub [docs](https://docs.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh)
+* запустить **ssh-agent** в Cmder
+    - `eval $(ssh-agent)`
+    - проверить наличие ключей можно `ssh-add -l`
+    - если дает ошибку "Could not open a connection to your authentication agent" см. (stackover)[https://stackoverflow.com/questions/17846529/could-not-open-a-connection-to-your-authentication-agent/10077302#10077302]
+* добавить ключ в агент `ssh-add <путь к публичному ключу>`
+* можно работать через ssh:
+    - перевести репозиторий на работу через ssh ` git remote set-url origin git@github.com:USERNAME/REPOSITORY.git`
+    - или клонировать через `git@github...` 
 
 ## 99. Разное
 
