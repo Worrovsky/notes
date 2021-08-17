@@ -107,8 +107,8 @@
 * запустить **ssh-agent** в Cmder
     - `eval $(ssh-agent)`
     - проверить наличие ключей можно `ssh-add -l`
-    - если дает ошибку "Could not open a connection to your authentication agent" см. (stackover)[https://stackoverflow.com/questions/17846529/could-not-open-a-connection-to-your-authentication-agent/10077302#10077302]
-* добавить ключ в агент `ssh-add <путь к публичному ключу>`
+    - если дает ошибку "Could not open a connection to your authentication agent" см. [stackover](https://stackoverflow.com/questions/17846529/could-not-open-a-connection-to-your-authentication-agent/10077302#10077302)
+* добавить ключ в агент `ssh-add <путь к приватному ключу>`
 * можно работать через ssh:
     - перевести репозиторий на работу через ssh ` git remote set-url origin git@github.com:USERNAME/REPOSITORY.git`
     - или клонировать через `git@github...` 
