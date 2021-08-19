@@ -878,3 +878,206 @@
 Можно поменять стратегию (начнет действовать для новых данных):
 
     ALTER TABLE t ALTER COLUMN n SET STORAGE extended;
+
+
+## 6. Мониторинг
+
+### 6.1 Стандартные средства ОС
+
+Стандартные стредства ОС:
+
+* процессы:
+    - `ps aux |grep ^postgres`
+* ресурсы: iostat, vmstat, sar, top
+* дисковое пространство: df, du, quota
+
+### 6.2 Внутренняя статистика
+
+Внутренняя статистика PostgreSQL:
+
+* собственно статистика, собираемая сервером и хранящаяся внутри
+    - текущая активность процессов
+    - разнообразная статистика, собираемая через **stats collector**
+* логи
+
+Просмотр текущей активности всех процессов: представление **pg_stat_activity** (autovacuum, client backend, walwriter и т. п.) и другие. Настройка: параметр `track_activities`, включена по умолчанию, отключать не следует. 
+
+Аналогичная команда ОС:
+    
+    ps -o pid,command --ppid `head -n 1 $PGDATA/postmaster.pid`
+
+Сбор статистики может выполняться фоновым процессом **stats collector**. Каждый обслуживающий процесс сервера собирает статистику о своей работе и передает её коллектору. Коллектор периодически (обычно раз в 0.5 сек) сбрасывает статистику во временные файлы в `$PGDATA/pg_stat_tmp` (можно в память перенести для повышения производительности). По запросу последняя версия статистики читается из этого каталога. При остановке сервера сбрасывается в каталог `$PGDATA/pg_stat`. Счетчики статистики обнуляются по команде или при восстановлении после сбоя.
+
+Можно подключать расширения (входящие в поставку и внешние), позволяющие собирать дополнительную информацию: pg_stat_statements (по запросам), pg_stat_plans (по планам запросов) и др.
+
+### 6.3 Логи
+
+Основной параметр - `log_destination`: список приемников сообщений (stderr, syslog, csvlog)
+
+Дополнительно можно включить процесс - коллектор сообщений (параметр `logging_collector`). Этот коллектор будет записывать логи в файлы, определяемые параметрами `log_directory` и `log_filename`. Можно ротацию настраивать. Особенность коллектора - гарантирует запись сообщения (в отличие от syslog), поэтому при нагрузке процессы могут ждать ответа от коллектора -> снижение производительности.
+
+По умолчанию минимально настроен вывод логов. Можно включать (разные варианты: для БД, для кластера, на время сеанса):
+
+* `log_min_messages` - уровень логгирования
+* `log_min_duration_statement` - команды, выполнявшиеся больше заданного времени
+* `log_duration` - время выполнения команд
+* `log_statement` - сами команды
+* и др.
+
+Анализ логов: 
+
+* средства ОС: grep, awk, cat, tail и т. п.
+* внешние утилиты, например **pgBadger** (требует настройки логов)
+
+### 6.4 Примеры работы статистики
+
+Имитация работы: утилита `pgbench`:
+
+    # создаем тестовую базу
+    CREATE DATABASE testdb;
+    # инициализируем утилиту (создает таблицы)
+    \q
+    pgbench -i testdb
+
+    # сброс статистики
+    SELECT pg_stat_reset(); # это сброс на уровне базы данных
+    SELECT pg_stat_reset_shared('bgwriter'); # это на уровне кластера
+
+    # запуск теста
+    pgbench -T 10 testdb 
+    # в выводе tps - число транзакций в секунду
+
+**Статистика обращения к таблицам (`pg_stat_all_tables`)**
+    
+    SELECT * FROM pg_stat_all_tables WHERE schemaname = 'public' \gx
+        relid               | 16398
+        schemaname          | public
+        relid               | 16398
+        schemaname          | public
+        relname             | pgbench_history
+        seq_scan            | 0
+        seq_tup_read        | 0
+        idx_scan            | 
+        idx_tup_fetch       | 
+        n_tup_ins           | 7697
+        n_tup_upd           | 0
+        n_tup_del           | 0
+        n_tup_hot_upd       | 0
+        n_live_tup          | 7697
+        n_dead_tup          | 0
+        n_mod_since_analyze | 0
+        last_vacuum         | 2021-08-19 10:47:04.814125+03
+        last_autovacuum     | 
+        last_analyze        | 2021-08-19 10:47:04.814536+03
+        last_autoanalyze    | 2021-08-19 10:55:51.677843+03
+        vacuum_count        | 1
+        autovacuum_count    | 0
+        analyze_count       | 1
+        autoanalyze_count   | 2
+   
+Покажет: 
+
+* количество вставок, удалений, апдейтов
+* количество последовательный чтений таблицы (без использования индекса) `seq_scan`
+* количество чтений с использованием индекса `idx_scan`
+* количество операций очистки и время последних
+
+**Статистика в терминах страниц буферного кеша (`pg_statio_all_tables `)**
+
+    SELECT * FROM pg_statio_all_tables WHERE schemaname = 'public' \gx
+        relid           | 16404
+        schemaname      | public
+        relname         | pgbench_accounts
+        heap_blks_read  | 1671
+        heap_blks_hit   | 38086
+        idx_blks_read   | 276
+        idx_blks_hit    | 34293
+        toast_blks_read | 
+        toast_blks_hit  | 
+        tidx_blks_read  | 
+        tidx_blks_hit   | 
+
+Показывает сколько страниц пришлось считать с диска (`..._read`),  а сколько оказалось в кеше (`..._hit`)  
+
+Аналогичная статистика есть конкретно по индексам `pg_stat_all_indexes` и `pg_statio_all_indexes`
+
+**Сводная статистика по БД**
+
+    SELECT * FROM pg_stat_database WHERE datname='testdb' \gx
+        datid          | 16397
+        datname        | testdb
+        numbackends    | 1
+        xact_commit    | 7890
+        xact_rollback  | 1
+        blks_read      | 2334
+        blks_hit       | 121880
+        tup_returned   | 364146
+        tup_fetched    | 19929
+        tup_inserted   | 107808
+        tup_updated    | 23117
+        tup_deleted    | 0
+        conflicts      | 0
+        temp_files     | 0
+        temp_bytes     | 0
+        deadlocks      | 0
+        blk_read_time  | 0
+        blk_write_time | 0
+        stats_reset    | 2021-08-19 10:45:36.957315+03
+
+Здесь есть данные по транзакциям и блокировкам.
+
+**Статистика по процессам фоновой записи и контрольных точек**
+
+    # SELECT * FROM pg_stat_bgwriter \gx
+        checkpoints_timed     | 179
+        checkpoints_req       | 4
+        checkpoint_write_time | 307801
+        checkpoint_sync_time  | 11
+        buffers_checkpoint    | 3814
+        buffers_clean         | 0
+        maxwritten_clean      | 0
+        buffers_backend       | 1753
+        buffers_backend_fsync | 0
+        buffers_alloc         | 3519
+        stats_reset           | 2021-08-17 09:39:49.806519+03
+
+`buffers_clean` - количество страниц, записанных фоновой записью;
+`buffers_checkpoint` - количество страниц, записанных контрольной точкой;
+`buffers_backend` - количество страниц, записанных серверными процессами.
+
+**Текущие активности и блокировки**
+
+Например есть активная транзакция, другой процесс те же данные пытается изменить и попадает на блокировку.
+
+    SELECT pid, query, state, wait_event, wait_event_type
+        , pg_blocking_pids(pid) 
+    FROM pg_stat_activity WHERE backend_type = 'client backend' \gx
+        pid              | 30562
+        query            | UPDATE t SET n = n + 1;
+        state            | idle in transaction
+        wait_event       | ClientRead
+        wait_event_type  | Client
+        pg_blocking_pids | {}
+        -----------------------------------
+        pid              | 30614
+        query            | UPDATE t SET n = n + 2;
+        state            | active
+        wait_event       | transactionid
+        wait_event_type  | Lock
+        pg_blocking_pids | {30562}
+
+Здесь выбираем все клиентские запросы, смотрим из состояние. Функция `pg_blocking_pids` показывает процессы, которые заблокировали указанный.
+
+Завершить клиентский процесс можно функциями `pg_cancel_backend(pid)`  и `pg_terminate_backend(pid)`. Завершать через `kill -9` не стоит, т. к. эти процессы порождает главный серверный процесс и он следит за их состоянием. Внешнее завершение может посчитать нарушением работоспособности.
+
+
+
+
+
+
+
+
+
+
+
+
