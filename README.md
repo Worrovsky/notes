@@ -63,7 +63,7 @@
                 - [webpack](/01-tech/01-programming/02-frontend/03-tools/webpack.md)
             * [Bootstrap](/01-tech/01-programming/02-frontend/bootstrap.md)
         + [БД](/01-tech/01-programming/04-db)
-            * [postgres](/01-tech/01-programming/04-db/postgres.md)
+            * [postgres DBA-1](/01-tech/01-programming/04-db/postgres-dba-1.md)
             * [redis](/01-tech/01-programming/04-db/redis.md)
         + [другие ЯП](/01-tech/01-programming/05-other-pl)
             * [Scala (Хорстманн)](/01-tech/01-programming/05-other-pl/scala-horstmann.md)
