@@ -64,6 +64,7 @@
             * [Bootstrap](/01-tech/01-programming/02-frontend/bootstrap.md)
         + [БД](/01-tech/01-programming/04-db)
             * [postgres DBA-1](/01-tech/01-programming/04-db/postgres-dba-1.md)
+            * [postgres DBA-2](/01-tech/01-programming/04-db/postgres-dba-2.md)
             * [redis](/01-tech/01-programming/04-db/redis.md)
         + [другие ЯП](/01-tech/01-programming/05-other-pl)
             * [Scala (Хорстманн)](/01-tech/01-programming/05-other-pl/scala-horstmann.md)
