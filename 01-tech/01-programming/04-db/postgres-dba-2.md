@@ -286,4 +286,3 @@
 
 Он может быть передан в другую транзакции через `SET TRANSACTION SNAPSHOT`. Можно только в Repeatable Read или в Serializable транзакции (в Read Committed снимки на каждый оператор созадются)
 
-
