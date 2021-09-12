@@ -24,7 +24,7 @@
                 - [пример TimeLine](/01-tech/01-programming/01-java/02-javafx/example-TimeLine.md)
             * [spring](/01-tech/01-programming/01-java/03-spring)
                 - [Spring Core](/01-tech/01-programming/01-java/03-spring/spring-core.md)
-                - [Spring O`Relly](/01-tech/01-programming/01-java/03-spring/orelly-spring.md)
+                - [Spring O'Relly](/01-tech/01-programming/01-java/03-spring/orelly-spring.md)
                 - [Spring Boot](/01-tech/01-programming/01-java/03-spring/spring-boot.md)
                 - [Spring Boot in Action](/01-tech/01-programming/01-java/03-spring/spring-boot-in-action.md)
                 - [Spring Data Access](/01-tech/01-programming/01-java/03-spring/spring-data-access.md)
