@@ -194,12 +194,42 @@
     # или из обычного терминала
     ls -l ....
 
+#### 1.3.6 Запуск при старте ОС (systemd) 
 
-**TODO**:
+После установки создаются файлы модулей systemd в `/usr/lib/systemd/system`:
 
-Просмотр процессов в терминале (м. б. top ?)
+* **postgresql.service** - основной модуль, как группа, управляет всеми кластерами
+* **postgresql@.service** - шаблон для запуска конкретной версии сервера
+* вспомогательные модули, не имеют блока `[Install]` (не автозапуск)
+    - **pg_basebackup.service**
+    - **pg_compresswal.service**
+    - **pg_dump.service**
 
-Запуск по умолчанию: systemd??? отключить, управление????
+Посмотреть статусы сервисов:
+
+    systemctl status postgresql.service
+    # статус должен быть Active: active (exited) - однократно выполняется
+    
+    systemctl status postgresql@10-main.service
+    # этот должен быть запущен
+
+Запуск / остановка вручную через systemctl:
+
+    systemctl stop postgresql@10-main.service
+    systemctl start postgresql@10-main.service 
+    # или
+    systemctl start postgresql.service
+
+Отключение автозагрузки
+    
+    sudo systemctl disable postgresql.service 
+    # в статусе теперь disabled
+    systemctl status postgresql.service
+
+Включение автозагрузки
+
+    sudo systemctl enable postgresql.service    
+
 
 ## 2. Утилита psql
 
