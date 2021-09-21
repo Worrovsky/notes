@@ -20,6 +20,7 @@
     - [2.2 Распараллеливание запросов](#22-Распараллеливание-запросов)
     - [2.3 Параллельное последовательное сканирование \(Parallel Sec Scan\)](#23-Параллельное-последовательное-сканирование-parallel-sec-scan)
     - [2.4 Настройка параллельных запросов](#24-Настройка-параллельных-запросов)
+    - [2.5 Примеры анализа](#25-Примеры-анализа)
 
 <!-- /MarkdownTOC -->
 
@@ -205,3 +206,94 @@
 * функции с пометкой `PARALLEL UNSAFE`
 * запросы в функциях из уже распараллеленного процесса
 * запросы на уровне SERIALIZABLE
+
+### 2.5 Примеры анализа
+
+#### 2.5.1 Последовательное сканирование
+
+    EXPLAIN SELECT * FROM flights;
+                           QUERY PLAN                           
+    ----------------------------------------------------------------
+     Seq Scan on flights  (cost=0.00..4564.67 rows=214867 width=63)
+
+Здесь `cost` - стоимость плана (первое число - стоимость подготовительного этапа, второе - общая стоимость), `rows` - оценка возвращаемого количества строк, `width` - оценка размера одной записи в байтах (не очень интересно)
+
+Мат. модель для последовательного сканирования состоит из двух частей.
+
+Первая - чтение страниц из памяти (стоимость чтения страницы в у.е. на количество страниц в таблице):
+
+    SELECT relpages, current_setting('seq_page_cost'),  
+        relpages * current_setting('seq_page_cost')::real AS total 
+    FROM pg_class WHERE relname='flights';
+
+        relpages | current_setting | total 
+       ----------+-----------------+-------
+            2416 | 1               |  2416
+
+
+Вторая - обработка строк (количество строк умножается на стоимость обработки одной строки):
+
+    SELECT reltuples, current_setting('cpu_tuple_cost'),
+        reltuples * current_setting('cpu_tuple_cost')::real AS total
+    FROM pg_class WHERE relname='flights';
+
+     reltuples | current_setting |  total  
+    -----------+-----------------+---------
+        214867 | 0.01            | 2148.67
+
+#### 2.5.2 Последовательное сканирование с агрегированием
+
+    EXPLAIN SELECT count(*) FROM seats;
+                          QUERY PLAN                           
+    ---------------------------------------------------------------
+     Aggregate  (cost=24.74..24.75 rows=1 width=8)
+       ->  Seq Scan on seats  (cost=0.00..21.39 rows=1339 width=0)
+
+Здесь у узла Aggregate есть подготовка.
+
+Разница между стоимостью Aggregate и Sec Scan - собственно расчет количества в узле Aggregate:
+
+    SELECT reltuples, current_setting('cpu_operator_cost'),
+        reltuples * current_setting('cpu_operator_cost')::real AS total
+    FROM pg_class WHERE relname='seats';
+
+        reltuples | current_setting | total  
+       -----------+-----------------+--------
+            1339 | 0.0025          | 3.3475
+
+#### 2.5.3 Параллельное последовательное сканирование
+
+    EXPLAIN SELECT count(*) FROM bookings;
+                        QUERY PLAN                              
+    -------------------------------------------------------------------------
+     Finalize Aggregate  (cost=25442.58..25442.59 rows=1 width=8)
+     ->  Gather  (cost=25442.36..25442.57 rows=2 width=8)
+       Workers Planned: 2
+        ->  Partial Aggregate  (cost=24442.36..24442.37 rows=1 width=8)
+         ->  Parallel Seq Scan on bookings  (cost=0.00..22243.29 rows=879629 width=0)
+
+Эффективное количество рабочих процессов - 2.4 (2 параллельных + ведущий процесс часть работы возьмет). Отсюда количество обработанных строк:
+
+    SELECT round(reltuples / 2.4) FROM pg_class WHERE relname = 'bookings';
+      => 879629 
+
+Оценка обработки этих строк (страницы все равно читаем полностью, но обработка делится между процессами):
+
+    SELECT round( relpages * current_setting('seq_page_cost')::real +
+        reltuples * current_setting('cpu_tuple_cost')::real / 2.4
+    ) FROM pg_class WHERE relname = 'bookings';
+        => 22243
+
+Стоимость узла **Partial Aggregate** (подсчет количества):
+
+    SELECT round(reltuples / 2.4 * current_setting('cpu_operator_cost')::real)
+        FROM pg_class WHERE relname='bookings';
+        => 2199
+
+Стоимость **Gather** - это стоимость запуска рабочих процессов и получение от них данных:
+
+    SELECT current_setting('parallel_setup_cost') parallel_setup_cost,
+        current_setting('parallel_tuple_cost') parallel_tuple_cost;
+         parallel_setup_cost | parallel_tuple_cost 
+        ---------------------+---------------------
+         1000                | 0.1
