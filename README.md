@@ -78,6 +78,7 @@
                 - [gradle how to](/01-tech/01-programming/09-instruments/02-gradle/gradle-how-to.md)
             * [git](/01-tech/01-programming/09-instruments/03-git)
                 - [git how to](/01-tech/01-programming/09-instruments/03-git/git-how-to.md)
+            * [docker](/01-tech/01-programming/09-instruments/04-docker/docker-how-to.md)
             * [разное](/01-tech/01-programming/09-instruments/99-misc)
                 - [curl](/01-tech/01-programming/09-instruments/99-misc/curl.md)
     - [linux](/01-tech/02-linux)
