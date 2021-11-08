@@ -80,6 +80,7 @@
                 - [git how to](/01-tech/01-programming/09-instruments/03-git/git-how-to.md)
             * [docker](/01-tech/01-programming/09-instruments/04-docker)
                 - [docker how to](/01-tech/01-programming/09-instruments/04-docker/docker-how-to.md)
+                - [dockerfile](/01-tech/01-programming/09-instruments/04-docker/dockerfile.md)
                 - [docker compose](/01-tech/01-programming/09-instruments/04-docker/docker-compose.md)
             * [разное](/01-tech/01-programming/09-instruments/99-misc)
                 - [curl](/01-tech/01-programming/09-instruments/99-misc/curl.md)
