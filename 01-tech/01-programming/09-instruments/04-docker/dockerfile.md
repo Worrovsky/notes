@@ -755,7 +755,9 @@
 
 Третья проблема: запуск в exec-форме запускает процесс с PID=1. А для ядра это особый процесс (должен решать задачи по завершению дочерних процессов). Исполняемая команда приложения скорее всего не будет этим заниматься. Возможны зомби процессы ([habr 2015](https://habr.com/ru/company/hexlet/blog/248519/)). 
 
-Подробно в [github dump-init](https://github.com/Yelp/dumb-init)
+Подробно в [github dumb-init](https://github.com/Yelp/dumb-init)
+
+[еще про PID=1 и dumb-init](https://engineeringblog.yelp.com/2016/01/dumb-init-an-init-for-docker.html)
 
 Решение - использование специальной прослойки `dumb-init`:
 
