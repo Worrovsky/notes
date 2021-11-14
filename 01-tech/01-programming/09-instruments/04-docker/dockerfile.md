@@ -135,6 +135,28 @@
 
 [blog CMD vs ENTRYPOINT](https://www.ctl.io/developers/blog/post/dockerfile-entrypoint-vs-cmd/)
 
+#### 0.5.0 Кратко правила анализа
+
+1. Docker всегда использует последние вхождения `CMD` и `ENTRYPOINT`
+2. shell-форма запускается через оболочку `/bin/sh -c` (если не переопределена через `SHELL`), exec-форма - напрямую
+3. `CMD` переопределяется параметрами при запуске контейнера
+4. Итоговая команда - результат простой конкатенации `ENTRYPOINT` и `CMD` (не последовательное выполнение!)
+
+Примеры:
+
+    ENTRYPOINT /bin/ping -c 3
+    CMD localhost
+        -> /bin/sh -c ‘/bin/ping -c 3’ /bin/sh -c localhost
+
+    ENTRYPOINT [“/bin/ping”,”-c”,”3”]
+    CMD localhost
+        -> /bin/ping -c 3 /bin/sh -c localhost
+
+    ENTRYPOINT [“/bin/ping”,”-c”,”3”]
+    CMD [“localhost”]
+        -> /bin/ping -c 3 localhost
+
+
 #### 0.5.1 Использование CMD или ENTRYPOINT
 
 Обе задают команды, которые будут исполнены при запуске контейнера без аргументов:
